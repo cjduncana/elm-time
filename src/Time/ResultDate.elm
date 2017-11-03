@@ -123,17 +123,8 @@ createDate year month day =
 
         dayResult : Result String Day
         dayResult =
-            case yearResult of
-                Ok year ->
-                    case monthResult of
-                        Ok month ->
-                            createDay year month day
-
-                        Err err ->
-                            Err err
-
-                Err err ->
-                    Err err
+            Result.map3 createDay yearResult monthResult (Ok day)
+                |> Result.andThen identity
     in
         Ok Date
             |> andMap yearResult
