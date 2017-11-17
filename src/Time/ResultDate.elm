@@ -13,8 +13,10 @@ module Time.ResultDate
         , decodeMonth
         , decodeYear
         , isLeapYear
+        , months
         )
 
+import Dict exposing (Dict)
 import Json.Decode as Decode exposing (Decoder)
 
 
@@ -87,45 +89,13 @@ createDay year month day =
 
 createMonth : Int -> Result String Month
 createMonth month =
-    case month of
-        1 ->
-            Ok January
-
-        2 ->
-            Ok February
-
-        3 ->
-            Ok March
-
-        4 ->
-            Ok April
-
-        5 ->
-            Ok May
-
-        6 ->
-            Ok June
-
-        7 ->
-            Ok July
-
-        8 ->
-            Ok August
-
-        9 ->
-            Ok September
-
-        10 ->
-            Ok October
-
-        11 ->
-            Ok November
-
-        12 ->
-            Ok December
-
-        m ->
-            Err <| "There is no month that maps to " ++ toString m
+    Dict.get month monthsDict
+        |> Maybe.map Ok
+        |> Maybe.withDefault
+            (Err <|
+                "There is no month that maps to the integer "
+                    ++ toString month
+            )
 
 
 createYear : Int -> Result String Year
@@ -228,3 +198,26 @@ toDecoder result =
 
         Err error ->
             Decode.fail error
+
+
+monthsDict : Dict Int Month
+monthsDict =
+    Dict.fromList
+        [ ( 1, January )
+        , ( 2, February )
+        , ( 3, March )
+        , ( 4, April )
+        , ( 5, May )
+        , ( 6, June )
+        , ( 7, July )
+        , ( 8, August )
+        , ( 9, September )
+        , ( 10, October )
+        , ( 11, November )
+        , ( 12, December )
+        ]
+
+
+months : List Month
+months =
+    Dict.values monthsDict
